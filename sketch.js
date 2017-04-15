@@ -3,19 +3,21 @@ var people = [];
 //global floor variable
 var floorY; 
 var open;
-var elevatorNumber;
 var elevImg;
+var lastOpen = 0;
+var openInterval = 500;
+var lastClose = 0;
+var closeInterval = 400;
 
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 	background(255);
     floorY = height/3 *2; //floor variable
-    elevators.push(new Elevator(width/2-width/3,floorY));
+    elevators.push(new Elevator(width/3-100,floorY));
     elevators.push(new Elevator(width/2-100, floorY));
-    elevators.push(new Elevator(width - width/3, floorY));
+    elevators.push(new Elevator(width - width/3-100, floorY));
     people.push(new Person());
     elevImg = loadImage("assets/v.png")
-
 }
 
 function draw() {
@@ -32,10 +34,23 @@ function draw() {
     //update elevators
     for(var i = 0; i < elevators.length; i++) {
         elevators[i].display();
-        if (open == true){
-            elevators[elevatorNumber].open();
-        }
-        
+
+        //open a new random elevator at every interval
+        if(millis() > lastOpen + openInterval){
+            lastOpen = millis();
+            rElevator = int(random(0,3))
+            elevators[rElevator].isOpen = true; 
+            console.log(rElevator)        
+        }   
+            
+        //if isOpen is true, open elevator 
+        if (elevators[i].isOpen== true){
+            elevators[i].open();
+        }      
+
+        //close elevator 
+        //TODO : Need to figure out how to closeIntervale elevator after delay in time
+        elevators[i].isOpen = false; 
     }
 
     //update person 
@@ -53,30 +68,29 @@ function Elevator(x,y){
     this.xDistance = this.x1+200;
     this.yDistance = this.y1 - 350
     this.floorY = height/3 * 2;
-  
+    this.col = color(200);
+    this.isOpen = false;
     this.display = function(){
         //drawing out the elevator
-        fill(200)
+        fill(this.col)
         stroke(55);
         strokeWeight(10)
         rect(this.x1, this.y1,this.xDistance, this.yDistance)
-     
+        // this.isOpen = false;
         strokeWeight(7)
         line(this.x1+100, this.y1-350, this.x1+100, this.y1); 
      
     }   
 
     this.open = function(){
-
-        // strokeWeight(20)  
-        // noStroke(); 
+        // image of open elevator 
+        this.isOpen = true;
         stroke(0);
         strokeWeight(1)
         fill(200)
         stroke(55);
         strokeWeight(10)
         rect(this.x1, this.y1,this.xDistance, this.yDistance)  
-        // strokeWeight(2)
         image(elevImg,this.x1,this.y1-350);
     }
 }
@@ -89,8 +103,7 @@ function mousePressed(){
         if (mouseX < elevators[i].xDistance && mouseX>elevators[i].x1 && mouseY>elevators[i].yDistance){
             console.log('here')
             //need to keep track of which elevator is open 
-            open = true;
-            elevatorNumber = i;
+            elevators[i].isOpen = true;
 
         }
         
