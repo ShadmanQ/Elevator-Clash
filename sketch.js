@@ -9,6 +9,7 @@ var openInterval = 500;
 var lastClose = 0;
 var closeInterval = 400;
 var timerDuration = 30 * 1000;
+var gameOver = false;
 
 function setup() {
 	createCanvas(windowWidth, windowHeight);
@@ -25,7 +26,8 @@ function setup() {
 function draw() {
 	background(255);
     
-    
+    if (!gameOver){
+
 	var timer = timerDuration - millis();
 
 	timer = int(timer/1000);
@@ -57,7 +59,7 @@ function draw() {
         //if isOpen is true, open elevator 
         if (elevators[i].isOpen== true){
             elevators[i].open();
-        }      
+        }
 
 
         //close elevator 
@@ -71,6 +73,14 @@ function draw() {
     for(var i=0;i<people.length; i++){
         people[i].display();
     }
+
+}
+
+if (millis() > timerDuration){
+	gameOver = true;
+	textSize(150);
+	text("You lose! Sorry :(", width/2,height/2);
+}
 }
 
 
@@ -84,7 +94,7 @@ function Elevator(x,y){
     this.floorY = height/3 * 2;
     this.col = color(200);
     this.isOpen = false;
-    this.duration = random(1000,2000);
+    this.duration = random(2000,4000);
     this.display = function(){
     	//starting from the top, drawing the up and down lights for the elevator
 		strokeWeight(5);
@@ -112,6 +122,21 @@ function Elevator(x,y){
         strokeWeight(10)
         rect(this.x1, this.y1,this.xDistance, this.yDistance)  
         image(elevImg,this.x1,this.y1-350);
+    }
+	//resets the elevator objects back to their original state,
+    this.close = function(){
+    	this.isOpen = false;
+    	strokeWeight(5);
+		triangle(this.x1+100,this.y1-480,this.x1+140, this.y1-450, this.x1+60,this.y1-450);
+        //drawing out the elevator
+        fill(this.col)
+        stroke(55);
+        strokeWeight(10)
+        rect(this.x1, this.y1,this.xDistance, this.yDistance);
+        
+        // this.isOpen = false;
+        strokeWeight(7)
+        line(this.x1+100, this.y1-350, this.x1+100, this.y1);
     }
 }
 
