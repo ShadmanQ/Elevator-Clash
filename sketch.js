@@ -9,6 +9,8 @@ var openInterval = 500;
 var lastClose = 0;
 var closeInterval = 400;
 
+var timerDuration = 30 * 1000;
+
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 	background(255);
@@ -18,11 +20,21 @@ function setup() {
     elevators.push(new Elevator(width - width/3-100, floorY));
     people.push(new Person());
     elevImg = loadImage("assets/v.png")
+
 }
 
 function draw() {
 	background(255);
     
+    
+	var timer = timerDuration - millis();
+
+	timer = int(timer/1000);
+	textAlign(CENTER,CENTER,)
+	textSize(50);
+	text(timer, width-50, height/10);
+	timer -=1;
+
     //floor for person to step on and elevators to sit on 
     fill(200,200)
     floorY = height/3 *2;
@@ -78,7 +90,8 @@ function Elevator(x,y){
         rect(this.x1, this.y1,this.xDistance, this.yDistance)
         // this.isOpen = false;
         strokeWeight(7)
-        line(this.x1+100, this.y1-350, this.x1+100, this.y1); 
+        line(this.x1+100, this.y1-350, this.x1+100, this.y1);
+
      
     }   
 
