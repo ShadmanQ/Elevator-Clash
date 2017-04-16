@@ -8,7 +8,6 @@ var lastOpen = 0;
 var openInterval = 500;
 var lastClose = 0;
 var closeInterval = 400;
-
 var timerDuration = 30 * 1000;
 
 function setup() {
@@ -30,7 +29,7 @@ function draw() {
 	var timer = timerDuration - millis();
 
 	timer = int(timer/1000);
-	textAlign(CENTER,CENTER,)
+	textAlign(CENTER,CENTER);
 	textSize(50);
 	text(timer, width-50, height/10);
 	timer -=1;
@@ -60,9 +59,12 @@ function draw() {
             elevators[i].open();
         }      
 
+
         //close elevator 
         //TODO : Need to figure out how to closeIntervale elevator after delay in time
+        if (millis() > elevators[i].duration + lastOpen){
         elevators[i].isOpen = false; 
+    	}
     }
 
     //update person 
@@ -78,16 +80,21 @@ function Elevator(x,y){
     this.x1 = x;
     this.y1= y;
     this.xDistance = this.x1+200;
-    this.yDistance = this.y1 - 350
+    this.yDistance = this.y1 - 350;
     this.floorY = height/3 * 2;
     this.col = color(200);
     this.isOpen = false;
+    this.duration = random(1000,2000);
     this.display = function(){
+    	//starting from the top, drawing the up and down lights for the elevator
+		strokeWeight(5);
+		triangle(this.x1+100,this.y1-480,this.x1+140, this.y1-450, this.x1+60,this.y1-450);
         //drawing out the elevator
         fill(this.col)
         stroke(55);
         strokeWeight(10)
-        rect(this.x1, this.y1,this.xDistance, this.yDistance)
+        rect(this.x1, this.y1,this.xDistance, this.yDistance);
+        
         // this.isOpen = false;
         strokeWeight(7)
         line(this.x1+100, this.y1-350, this.x1+100, this.y1);
@@ -149,5 +156,19 @@ function Person(){
         ellipse(mouseX, this.headY, 50)
 
     }
+
+
+   //maintenance cart obstacle
+   function Maintenance(){
+   this.x = x1;
+   this.y = y1;
+
+
+   this.display = function(){
+
+   }
+
+
+   }
 }
 
