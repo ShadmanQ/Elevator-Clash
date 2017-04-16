@@ -10,7 +10,6 @@ var lastClose = 0;
 var closeInterval = 400;
 var timerDuration = 30 * 1000;
 var gameOver = false;
-
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 	background(255);
@@ -26,10 +25,11 @@ function setup() {
 function draw() {
 	background(255);
     
+    //game over condition for the user
     if (!gameOver){
 
+	// sets up timer in top right corner
 	var timer = timerDuration - millis();
-
 	timer = int(timer/1000);
 	textAlign(CENTER,CENTER);
 	textSize(50);
@@ -47,34 +47,38 @@ function draw() {
     //update elevators
     for(var i = 0; i < elevators.length; i++) {
         elevators[i].display();
+    }
 
-        //open a new random elevator at every interval
-        if(millis() > lastOpen + openInterval){
-            lastOpen = millis();
-            rElevator = int(random(0,3))
-            elevators[rElevator].isOpen = true; 
-            console.log(rElevator)        
-        }   
-            
-        //if isOpen is true, open elevator 
-        if (elevators[i].isOpen== true){
-            elevators[i].open();
+        randElevator = int(random(0,3)); // selects random elevator
+        //first checks if elevator is closed
+        if (elevators[randElevator].isOpen == false){
+        	//checks if current time is greater than the randomly generated
+        	//if that's the case, open the elevaotr
+        	if (millis() > elevators[randElevator].openTime){
+        	elevators[randElevator].isOpen = true;
+        	//console.log(elevators[randElevator].openTime);
+        	}
         }
+        // checks if elevator is open
+        if (elevators[randElevator].isOpen == true){
+        	// if the current time goes over the randomly selected open duration for each elevator
+        	// the elevator closes back up
+        	if (millis() >(elevators[randElevator].openTime + elevators[randElevator].duration) ){
+        		elevators[randElevator].isOpen = false;
+        		//closing time of each elevator
+        		oldTime = millis();
+        		//console.log(oldTime);
+        		// the open time then gets reset to some between approx 5-10 seconds after closing time
+        		elevators[randElevator].openTime = int(oldTime+5000,(oldTime+10000));
+        		}
+        	}
 
-
-        //close elevator 
-        //TODO : Need to figure out how to closeIntervale elevator after delay in time
-        if (millis() > elevators[i].duration + lastOpen){
-        elevators[i].isOpen = false; 
-    	}
     }
 
     //update person 
     for(var i=0;i<people.length; i++){
         people[i].display();
     }
-
-}
 
 if (millis() > timerDuration){
 	gameOver = true;
@@ -94,13 +98,18 @@ function Elevator(x,y){
     this.floorY = height/3 * 2;
     this.col = color(200);
     this.isOpen = false;
-    this.duration = random(2000,4000);
+    this.openTime = random(4000,6000); // selects randomly beforehand at what time to open the elevator
+    this.duration = random(1000,2000); // selects randomly beforehand how long the elevator should stay open
     this.display = function(){
     	//starting from the top, drawing the up and down lights for the elevator
 		strokeWeight(5);
 		triangle(this.x1+100,this.y1-480,this.x1+140, this.y1-450, this.x1+60,this.y1-450);
         //drawing out the elevator
         fill(this.col)
+        
+
+        // draws the elevator in its closed state if the isOpen variable is false
+        if (this.isOpen == false){
         stroke(55);
         strokeWeight(10)
         rect(this.x1, this.y1,this.xDistance, this.yDistance);
@@ -108,7 +117,17 @@ function Elevator(x,y){
         // this.isOpen = false;
         strokeWeight(7)
         line(this.x1+100, this.y1-350, this.x1+100, this.y1);
-
+    }
+    	//draws the elevator in its open state if the isOpen variable is true
+    	if (this.isOpen == true){
+    	stroke(0);
+        strokeWeight(1)
+        fill(200)
+        stroke(55);
+        strokeWeight(10)
+        rect(this.x1, this.y1,this.xDistance, this.yDistance)  
+        image(elevImg,this.x1,this.y1-350);
+    	}
      
     }   
 
