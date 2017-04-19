@@ -47,6 +47,10 @@ function draw() {
     //update elevators
     for(var i = 0; i < elevators.length; i++) {
         elevators[i].display();
+        var midX = elevators[2].x1+(elevators[i].xDistance/2);
+        var midY = elevators[2].y1-(elevators[i].yDistance/2);
+        var PlayerDist = dist(midX,midY,people[0].x,people[0].y);
+       console.log(PlayerDist);
     }
 
         randElevator = int(random(0,3)); // selects random elevator
@@ -90,7 +94,7 @@ if (millis() > timerDuration){
 
 //elevator object
 function Elevator(x,y){
-    rectMode(CORNERS)
+    rectMode(CORNERS);
     this.x1 = x;
     this.y1= y;
     this.xDistance = this.x1+200;
@@ -131,6 +135,8 @@ function Elevator(x,y){
      
     }   
 
+
+// NOTE
     this.open = function(){
         // image of open elevator 
         this.isOpen = true;
@@ -141,21 +147,6 @@ function Elevator(x,y){
         strokeWeight(10)
         rect(this.x1, this.y1,this.xDistance, this.yDistance)  
         image(elevImg,this.x1,this.y1-350);
-    }
-	//resets the elevator objects back to their original state,
-    this.close = function(){
-    	this.isOpen = false;
-    	strokeWeight(5);
-		triangle(this.x1+100,this.y1-480,this.x1+140, this.y1-450, this.x1+60,this.y1-450);
-        //drawing out the elevator
-        fill(this.col)
-        stroke(55);
-        strokeWeight(10)
-        rect(this.x1, this.y1,this.xDistance, this.yDistance);
-        
-        // this.isOpen = false;
-        strokeWeight(7)
-        line(this.x1+100, this.y1-350, this.x1+100, this.y1);
     }
 }
 
