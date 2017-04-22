@@ -111,26 +111,23 @@ function Elevator(x,y){
         //drawing out the elevator
         fill(this.col)
         
-
         // draws the elevator in its closed state if the isOpen variable is false
         if (this.isOpen == false){
-        stroke(55);
-        strokeWeight(10)
-        rect(this.x1, this.y1,this.xDistance, this.yDistance);
-        
-        // this.isOpen = false;
-        strokeWeight(7)
-        line(this.x1+100, this.y1-350, this.x1+100, this.y1);
+            stroke(55);
+            strokeWeight(10)
+            rect(this.x1, this.y1,this.xDistance, this.yDistance);
+            strokeWeight(7)
+            line(this.x1+100, this.y1-350, this.x1+100, this.y1);
     }
     	//draws the elevator in its open state if the isOpen variable is true
     	if (this.isOpen == true){
-    	stroke(0);
-        strokeWeight(1)
-        fill(200)
-        stroke(55);
-        strokeWeight(10)
-        rect(this.x1, this.y1,this.xDistance, this.yDistance)  
-        image(elevImg,this.x1,this.y1-350);
+        	stroke(0);
+            strokeWeight(1)
+            fill(200)
+            stroke(55);
+            strokeWeight(10)
+            rect(this.x1, this.y1,this.xDistance, this.yDistance)  
+            image(elevImg,this.x1,this.y1-350);
     	}
      
     }   
