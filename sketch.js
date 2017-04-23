@@ -17,7 +17,7 @@ function setup() {
     elevators.push(new Elevator(width/3-100,floorY));
     elevators.push(new Elevator(width/2-100, floorY));
     elevators.push(new Elevator(width - width/3-100, floorY));
-    people.push(new Person());
+ 	theGuy = new Person;
     elevImg = loadImage("assets/v.png")
 
 }
@@ -43,16 +43,14 @@ function draw() {
     stroke(55)
     rect(0, floorY , width, height)
 
-
     //update elevators
     for(var i = 0; i < elevators.length; i++) {
         elevators[i].display();
-        var midX = elevators[2].x1+(elevators[i].xDistance/2);
-        var midY = elevators[2].y1-(elevators[i].yDistance/2);
-        var PlayerDist = dist(midX,midY,people[0].x,people[0].y);
-       console.log(PlayerDist);
     }
 
+    theGuy.display();
+       //update person 
+    theGuy.update();
         randElevator = int(random(0,3)); // selects random elevator
         //first checks if elevator is closed
         if (elevators[randElevator].isOpen == false){
@@ -77,20 +75,32 @@ function draw() {
         		}
         	}
 
+       	for (var i = 0; i < elevators.length; i++){
+       	playerDist=dist(theGuy.x,theGuy.y,elevators[i].x1+150,elevators[i].y1);
+       	console.log(playerDist);
+       	if (playerDist<160&&elevators[i].isOpen){
+       		gameOver = true;
+       		text("Wahoo! Next Level!",width/2,height/2);
+       	}
     }
 
-    //update person 
-    for(var i=0;i<people.length; i++){
-        people[i].display();
     }
 
-if (millis() > timerDuration){
+	if (millis() > timerDuration){
 	gameOver = true;
-	textSize(150);
-	text("You lose! Sorry :(", width/2,height/2);
-}
-}
+	}
 
+	if (gameOver && millis() > timerDuration){
+		textSize(150);
+		text("You lose! Sorry :(", width/2,height/2);
+	}
+	if (gameOver && millis()<timerDuration){
+		textSize(100);
+		text("Wahoo, next Level!", width/2,height/2);
+		//NOTE: Trying to figure out how to reset the level and the timer	
+	}
+
+}
 
 //elevator object
 function Elevator(x,y){
@@ -102,8 +112,8 @@ function Elevator(x,y){
     this.floorY = height/3 * 2;
     this.col = color(200);
     this.isOpen = false;
-    this.openTime = random(4000,6000); // selects randomly beforehand at what time to open the elevator
-    this.duration = random(1000,2000); // selects randomly beforehand how long the elevator should stay open
+    this.openTime = random(6000,8000); // selects randomly beforehand at what time to open the elevator
+    this.duration = random(500,1000); // selects randomly beforehand how long the elevator should stay open
     this.display = function(){
     	//starting from the top, drawing the up and down lights for the elevator
 		strokeWeight(5);
@@ -116,7 +126,7 @@ function Elevator(x,y){
             stroke(55);
             strokeWeight(10)
             rect(this.x1, this.y1,this.xDistance, this.yDistance);
-            strokeWeight(7)
+            strokeWeight(7);
             line(this.x1+100, this.y1-350, this.x1+100, this.y1);
     }
     	//draws the elevator in its open state if the isOpen variable is true
@@ -131,35 +141,10 @@ function Elevator(x,y){
     	}
      
     }   
-
-
-// NOTE
-    this.open = function(){
-        // image of open elevator 
-        this.isOpen = true;
-        stroke(0);
-        strokeWeight(1)
-        fill(200)
-        stroke(55);
-        strokeWeight(10)
-        rect(this.x1, this.y1,this.xDistance, this.yDistance)  
-        image(elevImg,this.x1,this.y1-350);
-    }
 }
 
 function mousePressed(){
     //update elevators
-
-    for(var i = 0; i < elevators.length; i++) {
-        //detect mouse click on elevator
-        if (mouseX < elevators[i].xDistance && mouseX>elevators[i].x1 && mouseY>elevators[i].yDistance){
-            console.log('here')
-            //need to keep track of which elevator is open 
-            elevators[i].isOpen = true;
-
-        }
-        
-    }
 }
 
 //person object
@@ -187,6 +172,9 @@ function Person(){
         fill(255,0,0)
         ellipse(mouseX, this.headY, 50)
 
+        this.update = function(){
+        	this.x = mouseX;
+        }
     }
 
 
