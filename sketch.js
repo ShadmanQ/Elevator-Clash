@@ -1,6 +1,8 @@
 var elevators = [];
 var people = [];
 var obstacles = [];
+var winText = ["Wahoo, next Level!","You got to class!","You made it on time, \nbut you're still failing the course","Nice! But how's your GPA looking?"]
+var lostText = ["You lose! Sorry :(","Great job, everyone hates you now","Oh no, you're late!","Womp womp"];
 //global floor variable
 var floorY; 
 var open;
@@ -32,9 +34,12 @@ function setup() {
  	theGuy = new Person;
     elevImg = loadImage("assets/v.png")
     problemElevator = int(random(elevators.length));  //variable to choose which elevator has an obstacle
-    thisObstacle = int(random(0,2));
-    console.log(thisObstacle) // variable to choose which obstacle to have in the elevator
     elevators[problemElevator].hasObstacle = true;
+    winMessage = winText[int(random(winText.length))];
+    loseMessage = lostText[int(random(lostText.length))];
+    thisObstacle = int(random(0,2));// variable to choose which obstacle to have in the elevator
+    
+
 }
 
 function draw() {
@@ -101,11 +106,15 @@ function draw() {
        	for (var i = 0; i < elevators.length; i++){
        	playerDist=dist(theGuy.x,theGuy.y,elevators[i].x1+150,elevators[i].y1);
        	console.log(elevators[0].hasObstacle,elevators[1].hasObstacle,elevators[2].hasObstacle);
-       	if (playerDist<50&&elevators[i].isOpen && !elevators[i].hasObstacle ){
+       	console.log(playerDist);
+       	if (playerDist<100&&elevators[i].isOpen && !elevators[i].hasObstacle ){
        		gameOver = true;
        	}
     }
 
+
+    fill(255,0,0);
+    rect(elevators[0].x1,elevators[0].y1,(elevators[0].x1+50),(elevators[0].y1+50));
     }
 
 	if (millis() > timerDuration){
@@ -114,11 +123,11 @@ function draw() {
 
 	if (gameOver && millis() > timerDuration){
 		textSize(150);
-		text("You lose! Sorry :(", width/2,height/2);
+		text(loseMessage, width/2,height/2);
 	}
 	if (gameOver && millis()<timerDuration){
 		textSize(100);
-		text("Wahoo, next Level!", width/2,height/2);
+		text(winMessage, width/2,height/2);
 		elevators[problemElevator].hasObstacle = false;
 		problemElevator = int(random(elevators.length));
 		//NOTE: Trying to figure out how to reset the level and the timer	
