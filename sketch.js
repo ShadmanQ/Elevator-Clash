@@ -1,5 +1,6 @@
 var elevators = [];
 var people = [];
+var obstacles = [];
 //global floor variable
 var floorY; 
 var open;
@@ -10,6 +11,15 @@ var lastClose = 0;
 var closeInterval = 400;
 var timerDuration = 30 * 1000;
 var gameOver = false;
+
+var CrowdImg;
+var SignImg;
+
+function preload(){
+	CrowdImg = loadImage("assets/crowd.png");
+	SignImg = loadImage("assets/maintenance.png")
+}
+
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 	background(255);
@@ -17,9 +27,14 @@ function setup() {
     elevators.push(new Elevator(width/3-100,floorY));
     elevators.push(new Elevator(width/2-100, floorY));
     elevators.push(new Elevator(width - width/3-100, floorY));
+    obstacles.push(new Obstacle(CrowdImg));
+    obstacles.push(new Obstacle(SignImg));
  	theGuy = new Person;
     elevImg = loadImage("assets/v.png")
-
+    problemElevator = int(random(elevators.length));  //variable to choose which elevator has an obstacle
+    thisObstacle = int(random(0,2));
+    console.log(thisObstacle) // variable to choose which obstacle to have in the elevator
+    elevators[problemElevator].hasObstacle = true;
 }
 
 function draw() {
@@ -46,7 +61,13 @@ function draw() {
     //update elevators
     for(var i = 0; i < elevators.length; i++) {
         elevators[i].display();
+         if(elevators[problemElevator].isOpen){
+         	obstacles[thisObstacle].display(elevators[problemElevator].x1,elevators[problemElevator].y1-200);
+       	}
     }
+
+    
+    
 
     theGuy.display();
        //update person 
@@ -75,12 +96,13 @@ function draw() {
         		}
         	}
 
+
+  
        	for (var i = 0; i < elevators.length; i++){
        	playerDist=dist(theGuy.x,theGuy.y,elevators[i].x1+150,elevators[i].y1);
-       	console.log(playerDist);
-       	if (playerDist<160&&elevators[i].isOpen){
+       	console.log(elevators[0].hasObstacle,elevators[1].hasObstacle,elevators[2].hasObstacle);
+       	if (playerDist<50&&elevators[i].isOpen && !elevators[i].hasObstacle ){
        		gameOver = true;
-       		text("Wahoo! Next Level!",width/2,height/2);
        	}
     }
 
@@ -97,6 +119,8 @@ function draw() {
 	if (gameOver && millis()<timerDuration){
 		textSize(100);
 		text("Wahoo, next Level!", width/2,height/2);
+		elevators[problemElevator].hasObstacle = false;
+		problemElevator = int(random(elevators.length));
 		//NOTE: Trying to figure out how to reset the level and the timer	
 	}
 
@@ -112,6 +136,7 @@ function Elevator(x,y){
     this.floorY = height/3 * 2;
     this.col = color(200);
     this.isOpen = false;
+    this.hasObstacle = false;
     this.openTime = random(6000,8000); // selects randomly beforehand at what time to open the elevator
     this.duration = random(500,1000); // selects randomly beforehand how long the elevator should stay open
     this.display = function(){
@@ -177,18 +202,18 @@ function Person(){
         }
     }
 
-
-   //maintenance cart obstacle
-   function Maintenance(){
-   this.x = x1;
-   this.y = y1;
-
-
-   this.display = function(){
-
-   }
-
-
-   }
 }
 
+function Obstacle(img){
+	this.x;
+	this.y;
+	this.graphic = img;
+
+	this.display = function(x1,y1){
+		this.x = x1;
+		this.y = y1;
+		this.graphic = img;
+		image(this.graphic,this.x,this.y,200,200);
+	}
+
+}
