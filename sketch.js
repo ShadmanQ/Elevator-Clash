@@ -2,7 +2,7 @@ var elevators = [];
 var people = [];
 var obstacles = [];
 var winText = ["Wahoo, next Level!","You got to class!","You made it on time, \nbut you're still failing the course","Nice! But how's your GPA looking?"]
-var lostText = ["You lose! Sorry :(","Great job, everyone hates you now","Oh no, you're late!","Womp womp"];
+var lostText = ["You lose! Sorry :(","Great job, \neveryone hates you now","Oh no, you're late!","Womp womp"];
 //global floor variable
 var floorY; 
 var open;
@@ -16,6 +16,8 @@ var gameOver = false;
 
 var CrowdImg;
 var SignImg;
+
+var PlayerStatus = "blank";
 
 function preload(){
 	CrowdImg = loadImage("assets/crowd.png");
@@ -38,15 +40,19 @@ function setup() {
     winMessage = winText[int(random(winText.length))];
     loseMessage = lostText[int(random(lostText.length))];
     thisObstacle = int(random(0,2));// variable to choose which obstacle to have in the elevator
+    fill(255,0,0);
     
-
 }
 
 function draw() {
 	background(255);
-    
+  
+
     //game over condition for the user
     if (!gameOver){
+   	textSize(25);
+    textAlign(LEFT);
+    text("Choose the right elevator \nto get to class!\nYou have to go " + theGuy.direction,0,50);
 
 	// sets up timer in top right corner
 	var timer = timerDuration - millis();
@@ -93,9 +99,9 @@ function draw() {
         	// the elevator closes back up
         	if (millis() >(elevators[randElevator].openTime + elevators[randElevator].duration) ){
         		elevators[randElevator].isOpen = false;
+        		elevators[randElevator].direction = random(["up","down"]);
         		//closing time of each elevator
         		oldTime = millis();
-        		//console.log(oldTime);
         		// the open time then gets reset to some between approx 5-10 seconds after closing time
         		elevators[randElevator].openTime = int(oldTime+5000,(oldTime+10000));
         		}
@@ -104,28 +110,28 @@ function draw() {
 
   
        	for (var i = 0; i < elevators.length; i++){
-       	playerDist=dist(theGuy.x,theGuy.y,elevators[i].x1+150,elevators[i].y1);
-       	console.log(elevators[0].hasObstacle,elevators[1].hasObstacle,elevators[2].hasObstacle);
-       	console.log(playerDist);
-       	if (playerDist<100&&elevators[i].isOpen && !elevators[i].hasObstacle ){
-       		gameOver = true;
-       	}
-    }
-
-
-    fill(255,0,0);
-    rect(elevators[0].x1,elevators[0].y1,(elevators[0].x1+50),(elevators[0].y1+50));
+       		playerDist=dist(theGuy.x,theGuy.y,elevators[i].x1+150,elevators[i].y1);
+       		if (playerDist<100&&elevators[i].isOpen && !elevators[i].hasObstacle &&elevators[i].direction==theGuy.direction ){
+       			gameOver = true;
+       			PlayerStatus = "win";
+       			}
+       		if (playerDist<100&&elevators[i].isOpen && elevators[i].hasObstacle ){
+       			gameOver = true;
+       			PlayerStatus = "loss";
+       			}
+    		}
     }
 
 	if (millis() > timerDuration){
 	gameOver = true;
+	PlayerStatus = "loss";
 	}
 
-	if (gameOver && millis() > timerDuration){
-		textSize(150);
+	if (gameOver && PlayerStatus == "loss"){
+		textSize(120);
 		text(loseMessage, width/2,height/2);
 	}
-	if (gameOver && millis()<timerDuration){
+	if (gameOver && PlayerStatus == "win"){
 		textSize(100);
 		text(winMessage, width/2,height/2);
 		elevators[problemElevator].hasObstacle = false;
@@ -142,16 +148,27 @@ function Elevator(x,y){
     this.y1= y;
     this.xDistance = this.x1+200;
     this.yDistance = this.y1 - 350;
+    this.direction = random(["up","down"]);
     this.floorY = height/3 * 2;
     this.col = color(200);
     this.isOpen = false;
     this.hasObstacle = false;
-    this.openTime = random(6000,8000); // selects randomly beforehand at what time to open the elevator
-    this.duration = random(500,1000); // selects randomly beforehand how long the elevator should stay open
+    this.openTime = random(4000,8000); // selects randomly beforehand at what time to open the elevator
+    this.duration = random(500,1500); // selects randomly beforehand how long the elevator should stay open
     this.display = function(){
     	//starting from the top, drawing the up and down lights for the elevator
 		strokeWeight(5);
+		//upper light
+		if (this.direction == "up" && this.isOpen == true){
+			fill(255,150,0);
+			}
 		triangle(this.x1+100,this.y1-480,this.x1+140, this.y1-450, this.x1+60,this.y1-450);
+		fill(this.col)
+		//lower
+		if (this.direction == "down" && this.isOpen == true){
+			fill(255,0,0);
+			}
+		triangle(this.x1+100,this.y1-390,this.x1+140,this.y1-420,this.x1+60,this.y1-420);
         //drawing out the elevator
         fill(this.col)
         
@@ -188,6 +205,7 @@ function Person(){
     this.headY = this.y;
     this.feetY = this.y+100;
     this.armsY = this.y +50;
+    this.direction = random(["up","down"]);
 
     //drawing out person 
     this.display = function(){
