@@ -174,6 +174,7 @@ function draw() {
 		
 	}
 	if (gameOver && PlayerStatus == "win"){
+		
         fill(0,255,0)
 		textSize(120);
 		textFont(theFont2);
@@ -204,13 +205,21 @@ function Reset(){
 			}
 		}
 
+	if (onTimecount == 3){
+		for  (var i = 0; i < elevators.length; i++){
+			elevators[i].x1 -= 150;
+			elevators[i].xDistance -= 150;
+		}
+	elevators.push (new Elevator((elevators[2].x1+280), floorY));
+	}
+
 	PlayerStatus = "blank";
 	theGuy.direction = random(["up","down"]);
 	gameOver = false;
 	timerDuration -= 5000;
 	timerOffset = millis();
 	timer = timerDuration;
-	winMessage = winText[random(winText.length)]
+	winMessage = winText[int(random(winText.length))];
 	frameRate(30);
 
 }
