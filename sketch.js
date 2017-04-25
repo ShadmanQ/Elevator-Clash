@@ -1,8 +1,8 @@
 var elevators = [];
 var people = [];
 var obstacles = [];
-var winText = ["Wahoo, you won!","You got to class!","You made it on time!","Nice! You defeated the elevators"]
-var lostText = ["You lose! Sorry :(","Great job, \neveryone hates you now","Oh no, you're late!","Womp womp"];
+var winText = ["Wahoo, you won!","You got to class!","You made it on time!","Nice! You defeated the elevators","You made it, \nbut just barely!","4.0 Here I come!", "Good job! Did you remember \nto study for the test?"];
+var lostText = ["You lose! Sorry :(","Great job, \neveryone hates you now","Oh no, you're late!","Womp womp","You're late, \nwhat else is new?", "Guess you'll walk...", "Just blame the MTA"];
 //global floor variable
 var floorY; 
 var open;
@@ -14,10 +14,15 @@ var closeInterval = 400;
 var timerDuration = 30 * 1000;
 var gameOver = false;
 
+var winTime = 0;
+var timerOffset = 0;
+
 var CrowdImg;
 var SignImg;
 var ding;
 var PlayerStatus = "blank";
+
+var onTimecount = 0;
 
 function preload(){
 	CrowdImg = loadImage("assets/crowd.png");
@@ -41,6 +46,7 @@ function setup() {
     winMessage = winText[int(random(winText.length))];
     loseMessage = lostText[int(random(lostText.length))];
     thisObstacle = int(random(0,2));// variable to choose which obstacle to have in the elevator
+    var timer = timerDuration
     fill(255,0,0);
     
 }
@@ -54,7 +60,7 @@ function draw() {
     fill(55)
     textAlign(LEFT);
     text("Choose the right elevator \nand avoid the obstacles \nto get to class",20,50);
-
+    text("You've been to " + onTimecount + " classes on time",20,100);
     //change color of game directions depending on elevator direction
     if (theGuy.direction == 'down'){
         fill(255,0,0)
@@ -65,13 +71,12 @@ function draw() {
     text('You have to go ' + theGuy.direction, 20,130)
 
 	// sets up timer in top right corner
-	var timer = timerDuration - millis();
+	timer = timerDuration - (millis()-timerOffset);
     fill(55)
 	timer = int(timer/1000);
 	textAlign(CENTER,CENTER);
 	textSize(50);
 	text(timer, width-50, 50);
-	timer -=1;
 
     //floor for person to step on and elevators to sit on 
     fill('#67B2B2')
@@ -123,6 +128,7 @@ function draw() {
    			frameRate(1);
             gameOver = true;
    			PlayerStatus = "win";
+   			winTime = millis();
     	}
    		if (playerDist<100&&elevators[i].isOpen && elevators[i].hasObstacle){
    			frameRate(1)
@@ -133,7 +139,7 @@ function draw() {
 		}
     }
     //if timer runs out
-	if (millis() > timerDuration){
+	if (timer < 0){
     	fill(255,0,0)
         gameOver = true;
     	PlayerStatus = "loss";
@@ -148,10 +154,36 @@ function draw() {
         fill(0,255,0)
 		textSize(100);
 		text(winMessage, width/2,height/2);
-		elevators[problemElevator].hasObstacle = false;
-		problemElevator = int(random(elevators.length));
+		var displayTime = winTime + 3000;
+		if (millis() > displayTime){
+			Reset();
+		}
 		//NOTE: Trying to figure out how to reset the level and the timer	
 	}
+
+}
+
+function Reset(){
+	onTimecount +=1;
+	elevators[problemElevator].hasObstacle = false;
+	problemElevator = int(random(elevators.length));
+	elevators[problemElevator].hasObstacle = true;
+	for (var i = 0; i < elevators.length; i++)
+		{
+			elevators[i].isOpen = false;
+			if (onTimecount > 3){
+				elevators[i].openTime = int(random(2000,4000));
+				elevators[i].duration = int(random(750,900));
+			}
+		}
+
+	PlayerStatus = "blank";
+	theGuy.direction = random(["up","down"]);
+	gameOver = false;
+	timerDuration -= 5000;
+	timerOffset = millis();
+	timer = timerDuration;
+	frameRate(30);
 
 }
 
