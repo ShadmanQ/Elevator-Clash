@@ -1,7 +1,7 @@
 var elevators = [];
 var people = [];
 var obstacles = [];
-var winText = ["Wahoo, you won!","You got to class!","You made it on time!","Nice you defeated the elevators"]
+var winText = ["Wahoo, you won!","You got to class!","You made it on time!","Nice! You defeated the elevators"]
 var lostText = ["You lose! Sorry :(","Great job, \neveryone hates you now","Oh no, you're late!","Womp womp"];
 //global floor variable
 var floorY; 
@@ -27,7 +27,7 @@ function preload(){
 
 function setup() {
 	createCanvas(windowWidth, windowHeight);
-	background(255);
+	background(230 );
     floorY = height/3 *2; //floor height
     elevators.push(new Elevator(width/3-100,floorY));
     elevators.push(new Elevator(width/2-100, floorY));
@@ -74,7 +74,7 @@ function draw() {
 	timer -=1;
 
     //floor for person to step on and elevators to sit on 
-    fill(200,200)
+    fill('#67B2B2')
     floorY = height/3 *2;
     strokeWeight(10)
     stroke(55)
@@ -134,15 +134,18 @@ function draw() {
     }
     //if timer runs out
 	if (millis() > timerDuration){
-    	gameOver = true;
+    	fill(255,0,0)
+        gameOver = true;
     	PlayerStatus = "loss";
 	}
 
 	if (gameOver && PlayerStatus == "loss"){
-		textSize(120);
+        fill(255,0,0)
+		textSize(100);
 		text(loseMessage, width/2,height/2);
 	}
 	if (gameOver && PlayerStatus == "win"){
+        fill(0,255,0)
 		textSize(100);
 		text(winMessage, width/2,height/2);
 		elevators[problemElevator].hasObstacle = false;
@@ -165,16 +168,17 @@ function Elevator(x,y){
     this.isOpen = false;
     this.hasObstacle = false;
     this.openTime = random(4000,8000); // selects randomly beforehand at what time to open the elevator
-    this.duration = random(500,1500); // selects randomly beforehand how long the elevator should stay open
+    this.duration = random(500, 1000); // selects randomly beforehand how long the elevator should stay open
     this.display = function(){
     	//starting from the top, drawing the up and down lights for the elevator
 		strokeWeight(3);
 		//upper light
-
+        fill(this.col)
 		if (this.direction == "up" && this.isOpen == true){
 			fill(0,200,0);
-            console.log(ding.isPlaying)
-            if (!ding.isPlaying){
+            console.log(ding.isPlaying())
+            console.log('duration is ' +this.openTime)
+            if (!ding.isPlaying()){
                 ding.play();
             }
                
@@ -184,7 +188,7 @@ function Elevator(x,y){
 		//lower
 		if (this.direction == "down" && this.isOpen == true){
 			fill(255,0,0);
-            if (!ding.isPlaying){
+            if (!ding.isPlaying()){
                 ding.play();
 			}
         }
@@ -203,11 +207,12 @@ function Elevator(x,y){
     	if (this.isOpen == true){
         	stroke(0);
             strokeWeight(1)
-            fill(200)
+            fill(220)
             stroke(55);
             strokeWeight(10)
             rect(this.x1, this.y1,this.xDistance, this.yDistance)  
             image(elevImg,this.x1,this.y1-350);
+            fill(200)
     	}
      
     }   
@@ -216,7 +221,7 @@ function Elevator(x,y){
 //person object
 function Person(){
     this.x = mouseX;
-    this.y = height/3 * 2;
+    this.y = height/3 * 2-50;
     this.headY = this.y;
     this.feetY = this.y+100;
     this.armsY = this.y +50;
@@ -226,7 +231,7 @@ function Person(){
     this.display = function(){
         //body
         strokeWeight(4)
-        stroke(55,0,0)
+        stroke(0)
         line(mouseX ,this.feetY ,mouseX,this.headY)
         //feet
         line(mouseX, this.feetY, mouseX-20, this.feetY+20)
@@ -236,8 +241,9 @@ function Person(){
         line(mouseX, this.armsY, mouseX-20, this.armsY -15)
         //head
         noStroke();
-        fill(255,0,0)
+        fill('#080F33')
         ellipse(mouseX, this.headY, 50)
+        fill(255,0,0)
 
         this.update = function(){
         	this.x = mouseX;
