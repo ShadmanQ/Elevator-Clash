@@ -1,7 +1,7 @@
 var elevators = [];
 var people = [];
 var obstacles = [];
-var winText = ["Wahoo, next Level!","You got to class!","You made it on time!","Nice you defeated the elevators"]
+var winText = ["Wahoo, you won!","You got to class!","You made it on time!","Nice you defeated the elevators"]
 var lostText = ["You lose! Sorry :(","Great job, \neveryone hates you now","Oh no, you're late!","Womp womp"];
 //global floor variable
 var floorY; 
@@ -16,7 +16,7 @@ var gameOver = false;
 
 var CrowdImg;
 var SignImg;
-
+var ding;
 var PlayerStatus = "blank";
 
 function preload(){
@@ -53,14 +53,24 @@ function draw() {
    	textSize(20);
     fill(55)
     textAlign(LEFT);
-    text("Choose the right elevator \nand avoid the obstacles \nto get to class!\nYou have to go " + theGuy.direction,20,50);
+    text("Choose the right elevator \nand avoid the obstacles \nto get to class",20,50);
+
+    //change color of game directions depending on elevator direction
+    if (theGuy.direction == 'down'){
+        fill(255,0,0)
+    }
+    if (theGuy.direction == 'up'){
+        fill(0,200,0)
+    }
+    text('You have to go ' + theGuy.direction, 20,130)
 
 	// sets up timer in top right corner
 	var timer = timerDuration - millis();
+    fill(55)
 	timer = int(timer/1000);
 	textAlign(CENTER,CENTER);
 	textSize(50);
-	text(timer, width-50, height/10);
+	text(timer, width-50, 50);
 	timer -=1;
 
     //floor for person to step on and elevators to sit on 
@@ -82,42 +92,45 @@ function draw() {
     theGuy.display();
     //update person 
     theGuy.update();
-        randElevator = int(random(0,3)); // selects random elevator
-        //first checks if elevator is closed
-        if (elevators[randElevator].isOpen == false){
-        	//checks if current time is greater than the randomly generated
-        	//if that's the case, open the elevaotr
-        	if (millis() > elevators[randElevator].openTime){
-        	elevators[randElevator].isOpen = true;
-        	//console.log(elevators[randElevator].openTime);
-        	}
-        }
-        // checks if elevator is open
-        if (elevators[randElevator].isOpen == true){
-        	// if the current time goes over the randomly selected open duration for each elevator
-        	// the elevator closes back up
-        	if (millis() >(elevators[randElevator].openTime + elevators[randElevator].duration) ){
-        		elevators[randElevator].isOpen = false;
-        		elevators[randElevator].direction = random(["up","down"]);
-        		//closing time of each elevator
-        		oldTime = millis();
-        		// the open time then gets reset to some between approx 5-10 seconds after closing time
-        		elevators[randElevator].openTime = int(oldTime+5000,(oldTime+10000));
-        		}
-        	}
-
-        //determine win or lose  
-       	for (var i = 0; i < elevators.length; i++){
-       		playerDist=dist(theGuy.x,theGuy.y,elevators[i].x1+150,elevators[i].y1);
-       		if (playerDist<100&&elevators[i].isOpen && !elevators[i].hasObstacle &&elevators[i].direction==theGuy.direction ){
-       			gameOver = true;
-       			PlayerStatus = "win";
-       			}
-       		if (playerDist<100&&elevators[i].isOpen && elevators[i].hasObstacle ){
-       			gameOver = true;
-       			PlayerStatus = "loss";
-       			}
+    randElevator = int(random(0,3)); // selects random elevator
+    //first checks if elevator is closed
+    if (elevators[randElevator].isOpen == false){
+    	//checks if current time is greater than the randomly generated
+    	//if that's the case, open the elevaotr
+    	if (millis() > elevators[randElevator].openTime){
+    	elevators[randElevator].isOpen = true;
+    	//console.log(elevators[randElevator].openTime);
+    	}
+    }
+    // checks if elevator is open
+    if (elevators[randElevator].isOpen == true){
+    	// if the current time goes over the randomly selected open duration for each elevator
+    	// the elevator closes back up
+    	if (millis() >(elevators[randElevator].openTime + elevators[randElevator].duration) ){
+    		elevators[randElevator].isOpen = false;
+    		elevators[randElevator].direction = random(["up","down"]);
+    		//closing time of each elevator
+    		oldTime = millis();
+    		// the open time then gets reset to some between approx 5-10 seconds after closing time
+    		elevators[randElevator].openTime = int(oldTime+5000,(oldTime+10000));
     		}
+    	}
+
+    //determine win or lose  
+   	for (var i = 0; i < elevators.length; i++){
+   		playerDist=dist(theGuy.x,theGuy.y,elevators[i].x1+150,elevators[i].y1);
+   		if (playerDist<100&&elevators[i].isOpen && !elevators[i].hasObstacle &&elevators[i].direction==theGuy.direction ){
+   			frameRate(1);
+            gameOver = true;
+   			PlayerStatus = "win";
+    	}
+   		if (playerDist<100&&elevators[i].isOpen && elevators[i].hasObstacle){
+   			frameRate(1)
+            gameOver = true;
+   			PlayerStatus = "loss";
+            
+   			}
+		}
     }
     //if timer runs out
 	if (millis() > timerDuration){
@@ -160,7 +173,10 @@ function Elevator(x,y){
 
 		if (this.direction == "up" && this.isOpen == true){
 			fill(0,200,0);
-            ding.play();
+            console.log(ding.isPlaying)
+            if (!ding.isPlaying){
+                ding.play();
+            }
                
 		}
 		triangle(this.x1+100,this.y1-480,this.x1+120, this.y1-450, this.x1+80,this.y1-450);
@@ -168,8 +184,10 @@ function Elevator(x,y){
 		//lower
 		if (this.direction == "down" && this.isOpen == true){
 			fill(255,0,0);
-            ding.play()
+            if (!ding.isPlaying){
+                ding.play();
 			}
+        }
 		triangle(this.x1+100,this.y1-405,this.x1+120,this.y1-435,this.x1+80,this.y1-435);
         fill(this.col)
         
