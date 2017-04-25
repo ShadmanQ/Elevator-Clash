@@ -11,7 +11,7 @@ var lastOpen = 0;
 var openInterval = 500;
 var lastClose = 0;
 var closeInterval = 400;
-var timerDuration = 30 * 1000;
+var timerDuration = 45 * 1000;
 var gameOver = false;
 
 var winTime = 0;
@@ -197,20 +197,28 @@ function Reset(){
 	problemElevator = int(random(elevators.length));
 	elevators[problemElevator].hasObstacle = true;
 	for (var i = 0; i < elevators.length; i++)
+		elevators[i].x1 -= 150;
+			elevators[i].xDistance -= 150;
 		{
 			elevators[i].isOpen = false;
 			if (onTimecount > 3){
 				elevators[i].openTime = int(random(2000,4000));
 				elevators[i].duration = int(random(750,900));
 			}
+
+			if (onTimecount > 6)
+			{
+				elevators[i].openTime = int(random(1000,1500));
+				elevators[i].duration = int(random(600,800));
+
+			}
 		}
 
-	if (onTimecount == 3){
+	if (onTimecount == 3 || onTimecount == 6){
 		for  (var i = 0; i < elevators.length; i++){
-			elevators[i].x1 -= 150;
-			elevators[i].xDistance -= 150;
+			
 		}
-	elevators.push (new Elevator((elevators[2].x1+280), floorY));
+	elevators.push (new Elevator((elevators[(elevators.length)-1].x1+280), floorY));
 	}
 
 	PlayerStatus = "blank";
