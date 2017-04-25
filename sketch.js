@@ -27,6 +27,9 @@ var applause;
 var womp;
 
 var onTimecount = 0;
+var theFont;
+var theFont2;
+
 
 function preload(){
 	CrowdImg = loadImage("assets/crowd.png");
@@ -34,6 +37,8 @@ function preload(){
     ding = loadSound("assets/ding.mp3")
     applause = loadSound("assets/applause.mp3");
     womp = loadSound("assets/womp.mp3");
+    theFont = loadFont("assets/AvenirNextLTPro-BoldCn.otf");
+    theFont2 = loadFont("assets/AvenirNextLTPro-HeavyCn.otf");
 }
 
 function setup() {
@@ -54,6 +59,7 @@ function setup() {
     thisObstacle = int(random(0,2));// variable to choose which obstacle to have in the elevator
     var timer = timerDuration
     fill(255,0,0);
+    textFont(theFont);
     
 }
 
@@ -62,11 +68,11 @@ function draw() {
   
     //game over condition for the user
     if (!gameOver){
-   	textSize(20);
+   	textSize(25);
     fill(55)
     textAlign(LEFT);
-    text("Choose the right elevator \nand avoid the obstacles \nto get to class",20,50);
-    text("You've been to " + onTimecount + " classes on time",20,100);
+    text("Choose the right elevator \nand avoid the obstacles \nto get to class!",20,50);
+    text("You've been to " + onTimecount + " classes on time.",20,110);
     //change color of game directions depending on elevator direction
     if (theGuy.direction == 'down'){
         fill(255,0,0)
@@ -162,13 +168,15 @@ function draw() {
         	location.reload();
     	}	
         fill(255,0,0)
-		textSize(100);
+		textSize(120);
+		textFont(theFont2);
 		text(loseMessage, width/2,height/2);
 		
 	}
 	if (gameOver && PlayerStatus == "win"){
         fill(0,255,0)
-		textSize(100);
+		textSize(120);
+		textFont(theFont2);
 		text(winMessage, width/2,height/2);
 		if (!applause.isPlaying()){
 			applause.play();
@@ -202,6 +210,7 @@ function Reset(){
 	timerDuration -= 5000;
 	timerOffset = millis();
 	timer = timerDuration;
+	winMessage = winText[random(winText.length)]
 	frameRate(30);
 
 }
