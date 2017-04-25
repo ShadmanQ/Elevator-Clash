@@ -15,6 +15,7 @@ var timerDuration = 30 * 1000;
 var gameOver = false;
 
 var winTime = 0;
+var losetime = 0;
 var timerOffset = 0;
 
 var CrowdImg;
@@ -22,12 +23,17 @@ var SignImg;
 var ding;
 var PlayerStatus = "blank";
 
+var applause;
+var womp;
+
 var onTimecount = 0;
 
 function preload(){
 	CrowdImg = loadImage("assets/crowd.png");
 	SignImg = loadImage("assets/maintenance.png")
     ding = loadSound("assets/ding.mp3")
+    applause = loadSound("assets/applause.mp3");
+    womp = loadSound("assets/womp.mp3");
 }
 
 function setup() {
@@ -134,6 +140,7 @@ function draw() {
    			frameRate(1)
             gameOver = true;
    			PlayerStatus = "loss";
+   			losetime = millis();
             
    			}
 		}
@@ -143,18 +150,30 @@ function draw() {
     	fill(255,0,0)
         gameOver = true;
     	PlayerStatus = "loss";
+    	losetime = millis()
 	}
 
 	if (gameOver && PlayerStatus == "loss"){
+
+		 if (!womp.isPlaying()){
+                womp.play();
+            }
+        if (millis() > losetime + 4000){
+        	location.reload();
+    	}	
         fill(255,0,0)
 		textSize(100);
 		text(loseMessage, width/2,height/2);
+		
 	}
 	if (gameOver && PlayerStatus == "win"){
         fill(0,255,0)
 		textSize(100);
 		text(winMessage, width/2,height/2);
-		var displayTime = winTime + 3000;
+		if (!applause.isPlaying()){
+			applause.play();
+		}
+		var displayTime = winTime + 4000;
 		if (millis() > displayTime){
 			Reset();
 		}
